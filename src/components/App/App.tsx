@@ -1,15 +1,26 @@
-import "./App.module.css";
 import { useState, useEffect } from "react";
 import SearchBar from "../SearchBar/SearchBar.tsx";
 import { fetchMovies } from "../../services/movieService.ts";
 import type { Movie } from "../../types/movie.ts";
 import MovieGrid from "../MovieGrid/MovieGrid.tsx";
 import MovieModal from "../MovieModal/MovieModal.tsx";
-import ReactPaginate from "./ReactPaginate.tsx";
+
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage.tsx";
 import { Toaster, toast } from "react-hot-toast";
+import ReactPaginateModule from "react-paginate";
+import type { ReactPaginateProps } from "react-paginate";
+import type { ComponentType } from "react";
+import css from "./App.module.css";
+
+type ModuleWithDefault<T> = { default: T };
+
+const ReactPaginate = (
+  ReactPaginateModule as unknown as ModuleWithDefault<
+    ComponentType<ReactPaginateProps>
+  >
+).default;
 
 export default function App() {
   const [query, setQuery] = useState("");
@@ -47,15 +58,21 @@ export default function App() {
   return (
     <>
       <SearchBar onSubmit={handleSearch} />
+      {isLoading && <Loader />}
+      {isError && <ErrorMessage />}
       {isSuccess && totalPages > 1 && (
         <ReactPaginate
           pageCount={totalPages}
-          onPageChange={currentPage}
-          forcePage={setCurrentPage}
+          pageRangeDisplayed={5}
+          marginPagesDisplayed={1}
+          onPageChange={({ selected }) => setCurrentPage(selected + 1)}
+          forcePage={currentPage - 1}
+          containerClassName={css.pagination}
+          activeClassName={css.active}
+          nextLabel="→"
+          previousLabel="←"
         />
       )}
-      {isLoading && <Loader />}
-      {isError && <ErrorMessage />}
 
       {data && data.total_pages > 0 && (
         <MovieGrid onSelect={openModal} movies={data.results} />
