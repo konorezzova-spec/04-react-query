@@ -1,11 +1,11 @@
 import "./App.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchBar from "../SearchBar/SearchBar.tsx";
 import { fetchMovies } from "../../services/movieService.ts";
 import type { Movie } from "../../types/movie.ts";
 import MovieGrid from "../MovieGrid/MovieGrid.tsx";
 import MovieModal from "../MovieModal/MovieModal.tsx";
-import Paginations from "./Paginations.tsx";
+import Pagination from "./Pagination.tsx";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage.tsx";
@@ -23,11 +23,13 @@ export default function App() {
   });
 
   const totalPages = data?.total_pages ?? 0;
-  if (data?.results.length == 0) {
-    toast("No movies found for your request.");
-  }
+  useEffect(() => {
+    if (data && data.results.length === 0) {
+      toast.error("No movies found for your request.");
+    }
+  }, [data]);
 
-  const handleSearch = async (newQuery: string) => {
+  const handleSearch = (newQuery: string) => {
     setQuery(newQuery);
     setCurrentPage(1);
   };
@@ -46,13 +48,12 @@ export default function App() {
     <>
       <SearchBar onSubmit={handleSearch} />
       {isSuccess && totalPages > 1 && (
-        <Paginations
+        <Pagination
           totalPages={totalPages}
           currentPage={currentPage}
           setPage={setCurrentPage}
         />
       )}
-
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
 

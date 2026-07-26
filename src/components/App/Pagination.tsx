@@ -26,7 +26,7 @@ interface PaginationProps {
   setPage: (nextPage: number) => void;
 }
 
-export default function Paginations({
+export default function Pagination({
   totalPages,
   currentPage,
   setPage,
