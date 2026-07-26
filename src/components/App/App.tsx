@@ -5,8 +5,11 @@ import { fetchMovies } from "../../services/movieService.ts";
 import type { Movie } from "../../types/movie.ts";
 import MovieGrid from "../MovieGrid/MovieGrid.tsx";
 import MovieModal from "../MovieModal/MovieModal.tsx";
-import ReactPaginate from "./ReactPaginate";
+import Paginations from "./Paginations.tsx";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import Loader from "../Loader/Loader";
+import ErrorMessage from "../ErrorMessage/ErrorMessage.tsx";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function App() {
   const [query, setQuery] = useState("");
@@ -20,6 +23,9 @@ export default function App() {
   });
 
   const totalPages = data?.total_pages ?? 0;
+  if (data?.results.length == 0) {
+    toast("No movies found for your request.");
+  }
 
   const handleSearch = async (newQuery: string) => {
     setQuery(newQuery);
@@ -27,14 +33,12 @@ export default function App() {
   };
 
   // for Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [selectedItem, setSelectedItem] = useState<Movie | null>(null);
   const openModal = (movie: Movie) => {
     setSelectedItem(movie);
-    setIsModalOpen(true);
   };
   const closeModal = () => {
-    setIsModalOpen(false);
     setSelectedItem(null);
   };
 
@@ -42,23 +46,23 @@ export default function App() {
     <>
       <SearchBar onSubmit={handleSearch} />
       {isSuccess && totalPages > 1 && (
-        <ReactPaginate
+        <Paginations
           totalPages={totalPages}
           currentPage={currentPage}
           setPage={setCurrentPage}
         />
       )}
 
-      {isLoading && <p>Loading data, please wait...</p>}
-      {isError && <p>Whoops, something went wrong! Please try again!</p>}
+      {isLoading && <Loader />}
+      {isError && <ErrorMessage />}
+
       {data && data.total_pages > 0 && (
         <MovieGrid onSelect={openModal} movies={data.results} />
       )}
+      <Toaster />
 
       {/* Modal */}
-      {isModalOpen && selectedItem && (
-        <MovieModal onClose={closeModal} movie={selectedItem} />
-      )}
+      {selectedItem && <MovieModal onClose={closeModal} movie={selectedItem} />}
     </>
   );
 }

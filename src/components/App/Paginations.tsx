@@ -1,6 +1,7 @@
 // Особливість імпорту бібліотеки react-paginate у Vite версії 8+.
 // Нам потрібно отримати саме React-компонент,
 // тому що імпорт повертає об'єкт форми { default: компонент }.
+
 import ReactPaginateModule from "react-paginate";
 import type { ReactPaginateProps } from "react-paginate";
 import type { ComponentType } from "react";
@@ -25,7 +26,7 @@ interface PaginationProps {
   setPage: (nextPage: number) => void;
 }
 
-export default function Pagination({
+export default function Paginations({
   totalPages,
   currentPage,
   setPage,
