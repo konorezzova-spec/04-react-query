@@ -13,7 +13,7 @@ type ModuleWithDefault<T> = { default: T };
 
 // У змінну отримуємо значення з властивості default.
 // За допомогою as додаємо всю оригінальну типізацію ReactPaginateProps.
-const ReactPaginate = (
+const Pagination = (
   ReactPaginateModule as unknown as ModuleWithDefault<
     ComponentType<ReactPaginateProps>
   >
@@ -21,23 +21,23 @@ const ReactPaginate = (
 
 // Описуємо пропси
 interface PaginationProps {
-  totalPages: number;
-  currentPage: number;
-  setPage: (nextPage: number) => void;
+  pageCount: number;
+  onPageChange: number;
+  forcePage: (nextPage: number) => void;
 }
 
-export default function Pagination({
-  totalPages,
-  currentPage,
-  setPage,
+export default function ReactPaginate({
+  pageCount,
+  onPageChange,
+  forcePage,
 }: PaginationProps) {
   return (
-    <ReactPaginate
-      pageCount={totalPages}
+    <Pagination
+      pageCount={pageCount}
       pageRangeDisplayed={5}
       marginPagesDisplayed={1}
-      onPageChange={({ selected }) => setPage(selected + 1)}
-      forcePage={currentPage - 1}
+      onPageChange={({ selected }) => forcePage(selected + 1)}
+      forcePage={onPageChange - 1}
       containerClassName={css.pagination}
       activeClassName={css.active}
       nextLabel="→"

@@ -5,7 +5,7 @@ import { fetchMovies } from "../../services/movieService.ts";
 import type { Movie } from "../../types/movie.ts";
 import MovieGrid from "../MovieGrid/MovieGrid.tsx";
 import MovieModal from "../MovieModal/MovieModal.tsx";
-import Pagination from "./Pagination.tsx";
+import ReactPaginate from "./ReactPaginate.tsx";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage.tsx";
@@ -48,10 +48,10 @@ export default function App() {
     <>
       <SearchBar onSubmit={handleSearch} />
       {isSuccess && totalPages > 1 && (
-        <Pagination
-          totalPages={totalPages}
-          currentPage={currentPage}
-          setPage={setCurrentPage}
+        <ReactPaginate
+          pageCount={totalPages}
+          onPageChange={currentPage}
+          forcePage={setCurrentPage}
         />
       )}
       {isLoading && <Loader />}
